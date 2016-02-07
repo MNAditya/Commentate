@@ -19,7 +19,10 @@ class EventViewController: CommentateViewController {
     @IBOutlet weak var profilePictureView: UIView!
     @IBOutlet weak var waveFormView: SCSiriWaveformView!
     var event : PFObject?
-    var backgroundMusic : AVAudioPlayer?
+    
+    //Switiching to AVPlayer for streaming live audio
+    var backgroundMusic : AVPlayer?
+    var audioPlayer = AVPlayer()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,7 +46,7 @@ class EventViewController: CommentateViewController {
     }
     
     override func viewDidDisappear(animated: Bool) {
-        self.backgroundMusic?.stop()
+        self.backgroundMusic?.pause()
     }
     
     override func viewDidAppear(animated: Bool) {
@@ -52,22 +55,22 @@ class EventViewController: CommentateViewController {
         let randomViewerCount = random() % 2000
         self.listenersLabel.text = "\(randomViewerCount)"
         
-        if let backgroundMusic = self.setupAudioPlayerWithFile("love story", type:"mp3") {
+        if let backgroundMusic = self.setupAudioPlayerWithURL("love story", type:"mp3") {
             self.backgroundMusic = backgroundMusic
         }
-        self.backgroundMusic?.meteringEnabled = true
+   //     self.backgroundMusic?.meteringEnabled = true
         backgroundMusic?.volume = 0.3
         backgroundMusic?.play()
         
-        let displaylink : CADisplayLink = CADisplayLink(target: self, selector: "updateMeters:")
-        displaylink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
+   //     let displaylink : CADisplayLink = CADisplayLink(target: self, selector: "updateMeters:")
+   //     displaylink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
     }
-    
+   /*
     func updateMeters(sender: AnyObject) {
         self.backgroundMusic?.updateMeters()
         
         let decibels = self.backgroundMusic?.averagePowerForChannel(0)
-                
+        
         var normalizedValue : Float
         if(decibels! < -60 || decibels! == 0) {
             normalizedValue = 0.0
@@ -77,7 +80,7 @@ class EventViewController: CommentateViewController {
         self.waveFormView.updateWithLevel(CGFloat(normalizedValue))
         
     }
-    
+*/
     func setupAudioPlayerWithFile(file:NSString, type:NSString) -> AVAudioPlayer?  {
         let path = NSBundle.mainBundle().pathForResource(file as String, ofType: type as String)
         let url = NSURL.fileURLWithPath(path!)
@@ -92,4 +95,20 @@ class EventViewController: CommentateViewController {
         
         return audioPlayer
     }
+    
+    //New function added to switch to URL using AVAudioPlayer
+    func setupAudioPlayerWithURL(file:NSString, type:NSString) -> AVPlayer?  {
+        
+        let url = "http://192.168.1.148:8000/stream"
+        var playerItem:AVPlayerItem?
+        let fileURL = NSURL(string: url)
+        
+        playerItem = AVPlayerItem(URL: fileURL!)
+        
+        var audioPlayer:AVPlayer?
+        audioPlayer = AVPlayer(playerItem: playerItem!)
+        
+        return audioPlayer
+    }
 }
+
