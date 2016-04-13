@@ -99,7 +99,7 @@ class EventViewController: CommentateViewController {
     //New function added to switch to URL using AVAudioPlayer
     func setupAudioPlayerWithURL(file:NSString, type:NSString) -> AVPlayer?  {
         
-        let url = "http://192.168.1.148:8000/stream"
+        let url = "http://52.39.18.14:8000/stream"
         var playerItem:AVPlayerItem?
         let fileURL = NSURL(string: url)
         
